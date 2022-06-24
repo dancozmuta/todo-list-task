@@ -1,0 +1,23 @@
+{
+  "name": "todo-list-task",
+  "version": "1.0.0",
+  "description": "ToDo list interview task",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dancozmuta/todo-list-task.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dancozmuta/todo-list-task/issues"
+  },
+  "homepage": "https://github.com/dancozmuta/todo-list-task#readme",
+  "devDependencies": {
+    "eslint": "^8.18.0"
+  }
+}

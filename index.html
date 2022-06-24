@@ -1,0 +1,38 @@
+<html>
+
+<head>
+  <title>To Do list:</title>
+  <link rel="icon" type="image/png" href="https://www.gstatic.com/gsx/shoppinglist_icon_48dp.png" />
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@200;300;400;600;700;900&display=swap" rel="stylesheet">
+  <link href="./style.css" type="text/css" rel="stylesheet" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="./js/draganddrop.js"></script>
+  <script src="./js/constants.js" defer></script>
+  <script src="./js/generate-id.js" defer></script>
+  <script src="./js/main.js" defer></script>
+
+  
+</head>
+
+<body>
+  <main class="">
+    <div class="column">
+      <h1>To Do list</h1>
+      <input type="text" class="mb-15" placeholder="New shopping list" id="userInput" onkeypress="addKey(event)">
+      <button type="button" id="add" onclick="addClick()">Create new list</button>
+      <ul class="categories-style"></ul>
+    </div>
+  </main>
+
+</body>
+
+<script>
+  window.addEventListener("DOMContentLoaded", () => {
+    sortList(document.querySelector('.categories-style'));
+  });
+</script>
+
+</html>
+

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>To Do list:</title>
+  <link rel="icon" type="image/png" href="https://www.gstatic.com/gsx/shoppinglist_icon_48dp.png" />
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@200;300;400;600;700;900&display=swap" rel="stylesheet">
+  <link href="./style.css" type="text/css" rel="stylesheet" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="./js/draganddrop.js"></script>
+  <script src="./js/generate-id.js" defer></script>
+  <script src="./js/constants.js" defer></script>
+  <script src="./js/category.js" defer></script>
+  
+</head>
+
+<body>
+  <main>
+    <div class="column">
+      <a href="./index.html">
+        <div class="row">
+          <img src="./img/arrow-back.svg" alt="reorder">
+          Back to main list
+        </div>
+      </a>
+      <h1 id="title" class="title"></h1>
+      <ul class="filter-style">
+        <li>
+          <input type="radio" id="fltrAll" name="filter" value="All" checked onclick="filterList(this)"/>
+          <label for="fltrAll">All</label>
+        </li>
+        <span class="spacer"></span>
+        <li id="completed">
+          <input type="radio" id="fltrCompleted" name="filter" value="completed" onclick="filterList(this)"/>
+          <label for="fltrCompleted">Completed</label>
+        </li>
+        <span class="spacer"></span>
+        <li id="uncompleted">
+          <input type="radio" id="fltrUncompleted" name="filter" value="incompleted" onclick="filterList(this)"/>
+          <label for="fltrUncompleted">Incompleted</label>
+        </li>
+        <span class="spacer"></span>
+        <li id="elapsed">
+          <input type="radio" id="fltrUncompleted" name="filter" value="elapsed" onclick="filterList(this)"/>
+          <label for="fltrUncompleted">Elapsed</label>
+        </li>
+      </ul>
+      <input type="text" placeholder="Item" id="userInput" class="mb-15" onkeypress="addItemKey(event)" >
+      <button type="button" id="add" onclick="addNewItem()">+ Add new item</button>
+      <ul class="items-style" id="mylist">
+      </ul>
+      
+    </div>
+  </main>
+</body>
+<script>
+  window.addEventListener("DOMContentLoaded", () => {
+    sortList(document.querySelector('.items-style'));
+  });
+</script>
+</html>
