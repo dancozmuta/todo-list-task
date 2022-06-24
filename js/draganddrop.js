@@ -1,5 +1,4 @@
 function sortList (target) {
-  console.log('drag and drop js', target)
   // (A) SET CSS + GET ALL LIST ITEMS
   target.classList.add("sortlist");
   let items = target.getElementsByTagName("li"), current = null;

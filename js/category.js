@@ -49,7 +49,6 @@ function init() {
 
   const lists = JSON.parse(localStorage.getItem(constants.listsListStorageName)) || [];
   const currentList = lists.find(item => item.id === currentListId);
-  console.log(currentList);
   setTitle(currentList.name);
 
   if (!currentList) {
@@ -59,11 +58,8 @@ function init() {
   // FETCHING TASKS FROM LOCAL STORAGE
   currentCategoryItems = JSON.parse(localStorage.getItem(`${constants.listPrefix}_${currentList.id}`) || "[]");
 
-  console.log('currentCategoryItems', currentCategoryItems);
-
   // ITERRATION THROUGH LOCAL STORAGE ARRAY
   for (let index = 0; index < currentCategoryItems.length; index++) {
-    console.log('currentCategoryItems days', currentCategoryItems[index].days);
     addnewItem(currentCategoryItems[index]);
   }
 
@@ -93,13 +89,20 @@ function createElement(listElementData) {
     </div>
       <button class="remove-dark" onclick="delItem('${listElementData.id}')"></button>`;
   newItem.id = listElementData.id;
+  // newItem.draggable = true;
   newItem.classList.add('incompleted');
   newItem.completed = listElementData.completed;
+  newItem.elapsed = listElementData.elapsed;
   const days = newItem.querySelector('input[type=number]');
   days.value = listElementData.days;
   const completedToggle = newItem.querySelector('input[type=checkbox]');
   const disabledays = newItem.querySelector('.days');
   completedToggle.addEventListener('click', toggleDone(newItem, listElementData, completedToggle, disabledays));
+
+  const decreaseSign = newItem.querySelector('#minus');
+  const daysNumber = newItem.querySelector('#count');
+  daysNumber.addEventListener('input', toggleElapsed(newItem, listElementData, decreaseSign, daysNumber));
+
 
   ul.insertBefore(newItem, ul.firstChild);
   newItem.style.display = "none";
@@ -111,7 +114,6 @@ function createElement(listElementData) {
 //SAVE CURRENT LIST
 function savecurrentCategoryItems() {
   localStorage.setItem(`${constants.listPrefix}_${currentListId}`, JSON.stringify(currentCategoryItems));
-  console.log('save current stoorage', currentCategoryItems);
 }
 
 //CREATE NEW CATEGORY
@@ -134,6 +136,7 @@ function getInputLength() {
 function addnewItem(val) {
   var inputValue = val;
   createElement(inputValue);
+  sortList(document.querySelector('.items-style'));
 }
 
 // FIND CURRENT LIST NAME
@@ -148,9 +151,9 @@ function delItem(id) {
   // GET INDEX OF THE ITEMS
   var newItem = document.getElementById(id);
   const position = currentCategoryItems.findIndex(function (element) {
-    // console.log(element.id, typeof element.id);
     return element.id === id;
   });
+
   if (position > -1) {
     currentCategoryItems.splice(position, 1);
     savecurrentCategoryItems();
@@ -166,8 +169,6 @@ function delItem(id) {
 
 // TOGGLE COMPLETE ON CLICK
 function toggleDone(myItem, data, checkbox, disabledays) {
-  //console.log(data);
-  //console.log(myItem);
   if (data.completed === true) {
     checkbox.checked = 'true';
     myItem.classList.add('done');
@@ -200,7 +201,25 @@ function addItemKey(event) {
 }
 
 
-// DAYS 
+// ELAPSED DAYS CHECK
+
+function toggleElapsed(newItem, data, decreaseSign, daysNumber) {
+  console.log('item inside elapsed function', daysNumber.value);
+  if (daysNumber.value < 1) {
+    newItem.classList.add('elapsed');
+    decreaseSign.classList.add('disabled');
+    data.elapsed = true;
+    console.log('!!!! days are 0', newItem, data);
+  } else {
+    console.log('days are not 0');
+    data.elapsed = false;
+    newItem.classList.remove('elapsed');
+    decreaseSign.classList.remove('disabled');
+  }
+}
+
+
+// DAYS COUNTER
 
 function countDays(el, data, identifiedItem) {
 
@@ -209,34 +228,38 @@ function countDays(el, data, identifiedItem) {
   });
   var input = el.parentNode.querySelector('input[type=number]');
 
-  var minus = el.parentNode.querySelector('#minus');
 
-  console.log('el', input.value);
+  var decreaseSign = el.parentNode.querySelector('#minus');
+  var listItem = el.parentElement.parentElement;
 
-  item.days = Math.max(1, item.days);
+  item.days = Math.max(0, item.days);
+
   if (data === 'plus') {
+    if (decreaseSign.classList.contains('disabled') && item.elapsed) {
+      decreaseSign.classList.remove('disabled');
+      listItem.classList.remove('elapsed');
+      item.elapsed = !item.elapsed;
+      console.log('item after', item.elapsed);
+    }
     item.days++;
     input.stepUp();
-  } else {
-    item.days--;
-    input.stepDown();
+  } if (data === 'minus' ) {
+      item.days--;
+      if (item.days === 0) {
+        console.log('reached 0');
+        decreaseSign.classList.add('disabled');
+        listItem.classList.add('elapsed');
+        item.elapsed = true;
+        console.log('item after', item.elapsed);
+      }
+      input.stepDown();
   }
-
-  console.log('item days', item.days);
-
-  console.log('item elapse', item.elapsed);
 
   savecurrentCategoryItems();
 }
 
 
-// ELAPSED
 
-function checkElapsed() {
-
-}
-
-console.log(currentCategoryItems);
 
 
 // LISTSORTING

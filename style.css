@@ -70,7 +70,7 @@ body {
     margin: 20px 0 40px 0;
     width: 100%;
   }
-  ul.categories-style li, ul.items-style li {
+  .categories-style li, .items-style li {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -401,6 +401,7 @@ span.spacer {
     background-color: #333;
     transform: translate(-50%, -50%);
   }
+
   .days button#plus:after {
     transform: translate(-50%, -50%) rotate(90deg);
   }
@@ -422,7 +423,11 @@ span.spacer {
     padding-right: .4rem;
   }
 
-  #minus .disabled {
+  .disabled {
     pointer-events: none;
     opacity: .2;
+  }
+
+  .elapsed {
+    background-color: #f5c6c0 !important;
   }
