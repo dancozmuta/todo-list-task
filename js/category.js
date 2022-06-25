@@ -1,14 +1,14 @@
 // TEMPLATE FOR ITEMS INSIDE THE SHOPPING LIST
 class ListItem {
   name = '';
-  days = 0;
+  date = '';
   position = 0;
   completed = false;
   elapsed = false
   id = '';
-  constructor(name, days, position, completed = false, elapsed = false, id = null) {
+  constructor(name, date, position, completed = false, elapsed = false, id = null) {
     this.name = name;
-    this.days = days;
+    this.date = date;
     this.position = position;
     this.completed = completed;
     this.elapsed = elapsed;
@@ -81,28 +81,20 @@ function createElement(listElementData) {
           <input type="checkbox" id="checklist_${listElementData.id}">
           <div class="control__indicator"></div>
      </label>
-    <div class="days">
-        <button id="minus"  onclick="countDays(this, 'minus', '${listElementData.id}')"></button>
-        <input type="number" id="count" class="text-center " min="0" name="days" value="${listElementData.days}">
-        <span>days</span>
-        <button id="plus"  onclick="countDays(this, 'plus', '${listElementData.id}')"></button>
-    </div>
+     <span id="due-date">${listElementData.date}</span>
       <button class="remove-dark" onclick="delItem('${listElementData.id}')"></button>`;
   newItem.id = listElementData.id;
   // newItem.draggable = true;
   newItem.classList.add('incompleted');
   newItem.completed = listElementData.completed;
   newItem.elapsed = listElementData.elapsed;
-  const days = newItem.querySelector('input[type=number]');
-  days.value = listElementData.days;
   const completedToggle = newItem.querySelector('input[type=checkbox]');
   const disabledays = newItem.querySelector('.days');
   completedToggle.addEventListener('click', toggleDone(newItem, listElementData, completedToggle, disabledays));
 
-  const decreaseSign = newItem.querySelector('#minus');
-  const daysNumber = newItem.querySelector('#count');
-  daysNumber.addEventListener('input', toggleElapsed(newItem, listElementData, decreaseSign, daysNumber));
-
+  const expiryDate = newItem.querySelector('#due-date');
+  daysCounter(newItem, expiryDate, listElementData);
+ 
 
   ul.insertBefore(newItem, ul.firstChild);
   newItem.style.display = "none";
@@ -119,11 +111,13 @@ function savecurrentCategoryItems() {
 //CREATE NEW CATEGORY
 function createNewItem() {
   var input = document.getElementById("userInput");
-  let newItem = new ListItem(input.value, 1, false);
+  var addDate = document.getElementById("add-date");
+  let newItem = new ListItem(input.value, addDate.value, 1, false);
   currentCategoryItems.push(newItem);
   createElement(newItem);
   savecurrentCategoryItems()
   input.value = '';
+  addDate.value = '';
 }
 
 // CHECK THE LENGTH OF THE INPUT FIELD
@@ -131,12 +125,15 @@ function getInputLength() {
   return document.getElementById("userInput").value.length;
 }
 
+// CHECK THE LENGTH OF THE INPUT FIELD
+function getAddDateLength() {
+  return document.getElementById("add-date").value.length;
+}
 
 // ADD NEW CATEGORY
 function addnewItem(val) {
   var inputValue = val;
   createElement(inputValue);
-  sortList(document.querySelector('.items-style'));
 }
 
 // FIND CURRENT LIST NAME
@@ -188,75 +185,62 @@ function toggleDone(myItem, data, checkbox, disabledays) {
 
 // ON CLICK
 function addNewItem() {
-  if (getInputLength() > 0) {
+  if (getInputLength() > 0 && getAddDateLength() > 0) {
     createNewItem();
   }
 }
 
 // ON KEYPRESS ENTER
 function addItemKey(event) {
-  if (getInputLength() > 0 && event.keyCode == 13) {
+  if (getInputLength() > 0 && getAddDateLength() > 0 && event.keyCode == 13) {
     createNewItem();
   }
 }
 
 
-// ELAPSED DAYS CHECK
 
-function toggleElapsed(newItem, data, decreaseSign, daysNumber) {
-  console.log('item inside elapsed function', daysNumber.value);
-  if (daysNumber.value < 1) {
-    newItem.classList.add('elapsed');
-    decreaseSign.classList.add('disabled');
-    data.elapsed = true;
-    console.log('!!!! days are 0', newItem, data);
-  } else {
-    console.log('days are not 0');
-    data.elapsed = false;
-    newItem.classList.remove('elapsed');
-    decreaseSign.classList.remove('disabled');
-  }
-}
+function daysCounter (el, expiryDate, listElementData) {
 
+  const processedDate = new Date(listElementData.date).toLocaleDateString('en-us', { month:"short", day:"numeric", year:"numeric" });;
+  console.log('listElementData.date', processedDate);
 
-// DAYS COUNTER
+  // Set the date we're counting down to
+  var countDownDate = new Date(processedDate + ' 23:59:59').getTime();
+  
+  console.log('countDownDate', countDownDate);
+  // Update the count down every 1 second
+  var x = setInterval(function() {
 
-function countDays(el, data, identifiedItem) {
+    // Get today's date and time
+    var now = new Date().getTime();
 
-  var item = currentCategoryItems.find(function (it) {
-    return it.id === identifiedItem;
-  });
-  var input = el.parentNode.querySelector('input[type=number]');
+    // Find the distance between now and the count down date
+    var distance = countDownDate - now;
 
+    // Time calculations for days, hours, minutes and seconds
+    var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+    var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    var seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-  var decreaseSign = el.parentNode.querySelector('#minus');
-  var listItem = el.parentElement.parentElement;
-
-  item.days = Math.max(0, item.days);
-
-  if (data === 'plus') {
-    if (decreaseSign.classList.contains('disabled') && item.elapsed) {
-      decreaseSign.classList.remove('disabled');
-      listItem.classList.remove('elapsed');
-      item.elapsed = !item.elapsed;
-      console.log('item after', item.elapsed);
-    }
-    item.days++;
-    input.stepUp();
-  } if (data === 'minus' ) {
-      item.days--;
-      if (item.days === 0) {
-        console.log('reached 0');
-        decreaseSign.classList.add('disabled');
-        listItem.classList.add('elapsed');
-        item.elapsed = true;
-        console.log('item after', item.elapsed);
+    // If the count down is finished, write some text
+    if (distance > 0 && days === 0) {
+      if (el.classList.contains('elapsed')) {
+        el.classList.remove('elapsed');
       }
-      input.stepDown();
-  }
+      el.classList.add('due-to-expire');
+    }
+    if (distance < 0 || days < 0) {
+      clearInterval(x);
+      el.classList.add('elapsed');
+      expiryDate.innerHTML = "overdue";
+      listElementData.elapsed = true;
+    }
+  }, 1000);
 
   savecurrentCategoryItems();
 }
+
 
 
 
@@ -289,3 +273,7 @@ function filterList(radio) {
     });
   }
 }
+
+
+
+
