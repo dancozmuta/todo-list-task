@@ -2,15 +2,15 @@
 class ListItem {
   name = '';
   date = '';
-  position = 0;
-  completed = false;
+  position = 1;
+  done = false;
   elapsed = false
   id = '';
-  constructor(name, date, position, completed = false, elapsed = false, id = null) {
+  constructor(name, date, position, done = false, elapsed = false, id = null) {
     this.name = name;
     this.date = date;
     this.position = position;
-    this.completed = completed;
+    this.done = done;
     this.elapsed = elapsed;
     if (id) {
       this.id = id;
@@ -60,9 +60,9 @@ function init() {
 
   // ITERRATION THROUGH LOCAL STORAGE ARRAY
   for (let index = 0; index < currentCategoryItems.length; index++) {
+    setPosition(index);
     addnewItem(currentCategoryItems[index]);
   }
-
 }
 
 function setTitle(title) {
@@ -70,31 +70,35 @@ function setTitle(title) {
   titleElement.textContent = title;
 }
 
+function setPosition(index) {
+  currentCategoryItems[index].position = index + 1;
+}
+
 // BUILD CATEGORIES FOUND IN LOCAL STORAGE
 function createElement(listElementData) {
   var ul = document.getElementsByClassName("items-style")[0];
-  // CREATE CATEGORY, STYLE IT AND APPEND IT TO THE LIST
+
+  // CREATE TASK, STYLE IT AND APPEND IT TO THE LIST
   var newItem = document.createElement('li');
   newItem.innerHTML =
     `<label class="control control--checkbox" for="checklist_${listElementData.id}">
-          <span>${listElementData.name}</span>
-          <input type="checkbox" id="checklist_${listElementData.id}">
-          <div class="control__indicator"></div>
-     </label>
-     <span id="due-date">${listElementData.date}</span>
-      <button class="remove-dark" onclick="delItem('${listElementData.id}')"></button>`;
+      <span>${listElementData.name}</span>
+      <input type="checkbox" id="checklist_${listElementData.id}">
+      <div class="control__indicator"></div>
+    </label>
+    <span id="due-date">${listElementData.date}</span>
+    <button class="remove-dark" onclick="delItem('${listElementData.id}')"></button>`;
   newItem.id = listElementData.id;
   // newItem.draggable = true;
-  newItem.classList.add('incompleted');
-  newItem.completed = listElementData.completed;
+  newItem.classList.add('pending');
+  newItem.done = listElementData.done;
   newItem.elapsed = listElementData.elapsed;
-  const completedToggle = newItem.querySelector('input[type=checkbox]');
-  const disabledays = newItem.querySelector('.days');
-  completedToggle.addEventListener('click', toggleDone(newItem, listElementData, completedToggle, disabledays));
+  const doneToggle = newItem.querySelector('input[type=checkbox]');
+  doneToggle.addEventListener('click', toggleDone(newItem, listElementData, doneToggle));
 
   const expiryDate = newItem.querySelector('#due-date');
   daysCounter(newItem, expiryDate, listElementData);
- 
+
 
   ul.insertBefore(newItem, ul.firstChild);
   newItem.style.display = "none";
@@ -105,6 +109,7 @@ function createElement(listElementData) {
 
 //SAVE CURRENT LIST
 function savecurrentCategoryItems() {
+  currentCategoryItems = sortOverdueTasks(currentCategoryItems, e => e.elapsed === true);
   localStorage.setItem(`${constants.listPrefix}_${currentListId}`, JSON.stringify(currentCategoryItems));
 }
 
@@ -115,6 +120,12 @@ function createNewItem() {
   let newItem = new ListItem(input.value, addDate.value, 1, false);
   currentCategoryItems.push(newItem);
   createElement(newItem);
+
+  // ITERRATION THROUGH LOCAL STORAGE ARRAY
+  for (let index = 0; index < currentCategoryItems.length; index++) {
+    setPosition(index);
+  }
+
   savecurrentCategoryItems()
   input.value = '';
   addDate.value = '';
@@ -165,20 +176,16 @@ function delItem(id) {
 
 
 // TOGGLE COMPLETE ON CLICK
-function toggleDone(myItem, data, checkbox, disabledays) {
-  if (data.completed === true) {
+function toggleDone(myItem, data, checkbox) {
+  if (data.done === true) {
     checkbox.checked = 'true';
     myItem.classList.add('done');
-    myItem.classList.add('completed');
-    myItem.classList.remove('incompleted');
-    disabledays.classList.add('unclickable');
+    myItem.classList.remove('pending');
   }
   return () => {
-    myItem.classList.toggle('completed');
-    myItem.classList.toggle('incompleted');
     myItem.classList.toggle('done');
-    disabledays.classList.toggle('unclickable');
-    data.completed = !data.completed;
+    myItem.classList.toggle('pending');
+    data.done = !data.done;
     savecurrentCategoryItems();
   }
 }
@@ -187,6 +194,7 @@ function toggleDone(myItem, data, checkbox, disabledays) {
 function addNewItem() {
   if (getInputLength() > 0 && getAddDateLength() > 0) {
     createNewItem();
+    document.location.reload(true);
   }
 }
 
@@ -194,22 +202,25 @@ function addNewItem() {
 function addItemKey(event) {
   if (getInputLength() > 0 && getAddDateLength() > 0 && event.keyCode == 13) {
     createNewItem();
+    document.location.reload(true);
   }
 }
 
 
 
-function daysCounter (el, expiryDate, listElementData) {
+function daysCounter(el, expiryDate, listElementData) {
 
-  const processedDate = new Date(listElementData.date).toLocaleDateString('en-us', { month:"short", day:"numeric", year:"numeric" });;
-  console.log('listElementData.date', processedDate);
+  const processedDate = new Date(listElementData.date).toLocaleDateString('en-us', {
+    month: "short",
+    day: "numeric",
+    year: "numeric"
+  });
 
   // Set the date we're counting down to
   var countDownDate = new Date(processedDate + ' 23:59:59').getTime();
-  
-  console.log('countDownDate', countDownDate);
+
   // Update the count down every 1 second
-  var x = setInterval(function() {
+  var x = setInterval(function () {
 
     // Get today's date and time
     var now = new Date().getTime();
@@ -223,7 +234,6 @@ function daysCounter (el, expiryDate, listElementData) {
     var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
     var seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-    // If the count down is finished, write some text
     if (distance > 0 && days === 0) {
       if (el.classList.contains('elapsed')) {
         el.classList.remove('elapsed');
@@ -242,38 +252,45 @@ function daysCounter (el, expiryDate, listElementData) {
 }
 
 
+// SORT OVERDUE TASKS AND PLACE THEM AT THE TOP
 
+function sortOverdueTasks(currentCategoryItems, fn) {
+  var non_matches = [];
+  var matches = currentCategoryItems.filter(function (e, i, currentCategoryItems) {
+    var match = fn(e, i, currentCategoryItems);
+    if (!match) non_matches.push(e);
+    return match;
+  });
 
+  return non_matches.concat(matches);
+}
 
 
 // LISTSORTING
+
 function filterList(radio) {
-  var completeItems = document.getElementsByClassName("completed");
-  var incompleteItems = document.getElementsByClassName("incompleted");
-  if (radio.value == "completed") {
-    Array.from(incompleteItems).forEach(function (el) {
+  var doneItems = document.getElementsByClassName("done");
+  var pendingItems = document.getElementsByClassName("pending");
+  if (radio.value == "done") {
+    Array.from(pendingItems).forEach(function (el) {
       el.style.display = 'none';
     });
-    Array.from(completeItems).forEach(function (el) {
+    Array.from(doneItems).forEach(function (el) {
       el.style.display = 'flex';
     });
-  } else if (radio.value == "incompleted") {
-    Array.from(completeItems).forEach(function (el) {
+  } else if (radio.value == "pending") {
+    Array.from(doneItems).forEach(function (el) {
       el.style.display = 'none';
     });
-    Array.from(incompleteItems).forEach(function (el) {
+    Array.from(pendingItems).forEach(function (el) {
       el.style.display = 'flex';
     });
   } else {
-    Array.from(completeItems).forEach(function (el) {
+    Array.from(doneItems).forEach(function (el) {
       el.style.display = 'flex';
     });
-    Array.from(incompleteItems).forEach(function (el) {
+    Array.from(pendingItems).forEach(function (el) {
       el.style.display = 'flex';
     });
   }
 }
-
-
-
-

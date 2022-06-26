@@ -32,19 +32,19 @@
           <label for="fltrAll">All</label>
         </li>
         <span class="spacer"></span>
-        <li id="completed">
-          <input type="radio" id="fltrCompleted" name="filter" value="completed" onclick="filterList(this)"/>
-          <label for="fltrCompleted">Completed</label>
+        <li id="done">
+          <input type="radio" id="fltrdone" name="filter" value="done" onclick="filterList(this)"/>
+          <label for="fltrdone">Done</label>
         </li>
         <span class="spacer"></span>
-        <li id="uncompleted">
-          <input type="radio" id="fltrUncompleted" name="filter" value="incompleted" onclick="filterList(this)"/>
-          <label for="fltrUncompleted">Incompleted</label>
+        <li id="undone">
+          <input type="radio" id="fltrPending" name="filter" value="pending" onclick="filterList(this)"/>
+          <label for="fltrPending">Pending</label>
         </li>
         <span class="spacer"></span>
         <li id="elapsed">
-          <input type="radio" id="fltrUncompleted" name="filter" value="elapsed" onclick="filterList(this)"/>
-          <label for="fltrUncompleted">Elapsed</label>
+          <input type="radio" id="fltrPending" name="filter" value="elapsed" onclick="filterList(this)"/>
+          <label for="fltrPending">Elapsed</label>
         </li>
       </ul>
       <input type="text" placeholder="Item" id="userInput" class="mb-15" onkeypress="addItemKey(event)" >
@@ -56,7 +56,7 @@
     </div>
   </main>
 </body>
-<script>
+<script >
   window.addEventListener("DOMContentLoaded", () => {
     sortList(document.querySelector('.items-style'));
   });

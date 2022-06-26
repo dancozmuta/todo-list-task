@@ -36,7 +36,6 @@ function createElement(listElementData, index) {
       <span id="categ">${listElementData.name}</span></a><button class="remove-dark" onclick="delItem('${listElementData.id}')"></button>`;
   li.id = listElementData.id;
   li.setAttribute('data-index', "");
-  console.log(li.position);
   ul.insertBefore(li, ul.firstChild);
   li.style.opacity = "0";
     setTimeout(function(){

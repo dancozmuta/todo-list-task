@@ -50,6 +50,6 @@ function sortList (target) {
           i.parentNode.insertBefore(current, i);
         }
       }
-    };
+    };  
   }
 }
