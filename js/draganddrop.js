@@ -50,6 +50,19 @@ function sortList (target) {
           i.parentNode.insertBefore(current, i);
         }
       }
+
+      currentCategoryItemsUpdated = [];
+
+      // ITERRATION DRAG AND DROPPED ITEMS
+      for (let index = 0; index < items.length; index++) {
+        currentCategoryItemsUpdated = sortOverdueTasks(currentCategoryItems, e => e.id === items[index].id);
+        console.log('items', items[index].id);
+        setPosition(index);
+      }
+
+      localStorage.setItem(`${constants.listPrefix}_${currentListId}`, JSON.stringify(currentCategoryItemsUpdated));
+
+      console.log('currentCategoryItems updated', currentCategoryItemsUpdated);
     };  
   }
 }

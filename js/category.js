@@ -58,6 +58,8 @@ function init() {
   // FETCHING TASKS FROM LOCAL STORAGE
   currentCategoryItems = JSON.parse(localStorage.getItem(`${constants.listPrefix}_${currentList.id}`) || "[]");
 
+  console.log('currentCategoryItems', currentCategoryItems);
+
   // ITERRATION THROUGH LOCAL STORAGE ARRAY
   for (let index = 0; index < currentCategoryItems.length; index++) {
     setPosition(index);
@@ -271,6 +273,7 @@ function sortOverdueTasks(currentCategoryItems, fn) {
 function filterList(radio) {
   var doneItems = document.getElementsByClassName("done");
   var pendingItems = document.getElementsByClassName("pending");
+  var elapsedItems = document.getElementsByClassName("elapsed");
   if (radio.value == "done") {
     Array.from(pendingItems).forEach(function (el) {
       el.style.display = 'none';
@@ -283,6 +286,16 @@ function filterList(radio) {
       el.style.display = 'none';
     });
     Array.from(pendingItems).forEach(function (el) {
+      el.style.display = 'flex';
+    });
+  } else if (radio.value == "elapsed") {
+    Array.from(doneItems).forEach(function (el) {
+      el.style.display = 'none';
+    });
+    Array.from(pendingItems).forEach(function (el) {
+      el.style.display = 'none';
+    });
+    Array.from(elapsedItems).forEach(function (el) {
       el.style.display = 'flex';
     });
   } else {
