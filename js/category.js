@@ -2,14 +2,12 @@
 class ListItem {
   name = '';
   date = '';
-  position = 1;
   done = false;
   elapsed = false
   id = '';
-  constructor(name, date, position, done = false, elapsed = false, id = null) {
+  constructor(name, date, done = false, elapsed = false, id = null) {
     this.name = name;
     this.date = date;
-    this.position = position;
     this.done = done;
     this.elapsed = elapsed;
     if (id) {
@@ -62,7 +60,6 @@ function init() {
 
   // ITERRATION THROUGH LOCAL STORAGE ARRAY
   for (let index = 0; index < currentCategoryItems.length; index++) {
-    setPosition(index);
     addnewItem(currentCategoryItems[index]);
   }
 }
@@ -72,9 +69,6 @@ function setTitle(title) {
   titleElement.textContent = title;
 }
 
-function setPosition(index) {
-  currentCategoryItems[index].position = index + 1;
-}
 
 // BUILD CATEGORIES FOUND IN LOCAL STORAGE
 function createElement(listElementData) {
@@ -101,8 +95,16 @@ function createElement(listElementData) {
   const expiryDate = newItem.querySelector('#due-date');
   daysCounter(newItem, expiryDate, listElementData);
 
+  const allElapsed = ul.querySelectorAll('.elapsed');
 
-  ul.insertBefore(newItem, ul.firstChild);
+  const lastElapsed = allElapsed[allElapsed.length - 1];
+
+  if (!lastElapsed ) {
+    ul.insertAdjacentElement('afterbegin', newItem)
+  } else {
+    lastElapsed.after(newItem);
+  }
+
   newItem.style.display = "none";
   setTimeout(function () {
     newItem.style.display = "flex";
@@ -119,14 +121,10 @@ function savecurrentCategoryItems() {
 function createNewItem() {
   var input = document.getElementById("userInput");
   var addDate = document.getElementById("add-date");
-  let newItem = new ListItem(input.value, addDate.value, 1, false);
+  let newItem = new ListItem(input.value, addDate.value, false);
   currentCategoryItems.push(newItem);
   createElement(newItem);
 
-  // ITERRATION THROUGH LOCAL STORAGE ARRAY
-  for (let index = 0; index < currentCategoryItems.length; index++) {
-    setPosition(index);
-  }
 
   savecurrentCategoryItems()
   input.value = '';
@@ -196,7 +194,7 @@ function toggleDone(myItem, data, checkbox) {
 function addNewItem() {
   if (getInputLength() > 0 && getAddDateLength() > 0) {
     createNewItem();
-    document.location.reload(true);
+    // document.location.reload(true);
   }
 }
 
@@ -204,7 +202,7 @@ function addNewItem() {
 function addItemKey(event) {
   if (getInputLength() > 0 && getAddDateLength() > 0 && event.keyCode == 13) {
     createNewItem();
-    document.location.reload(true);
+    // document.location.reload(true);
   }
 }
 

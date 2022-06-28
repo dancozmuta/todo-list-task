@@ -2,12 +2,10 @@
 class toDoList {
   name = '';
   id = '';
-  position = 0;
-  constructor(name, id = null, position) {
+  constructor(name, id = null) {
     this.name = name;
-    if (id, position) {
+    if (id) {
       this.id = id;
-      this.position = position;
     } else {
       this.id = uniqueID();
     }
