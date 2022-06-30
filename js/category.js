@@ -21,9 +21,9 @@ class ListItem {
 // GET THE NAME OF THE CATEGORY LIST
 function initListName(listElementData) {
   // FETCHING STRING FROM LOCAL STORAGE
-  currentShoppingList = JSON.parse(localStorage.getItem('toDoLists') || "[]");
+  currentTasksList = JSON.parse(localStorage.getItem('toDoLists') || "[]");
   // ITERRATION THROUGH LOCAL STORAGE ARRAY
-  currentShoppingList.find(x => x.id === '${listElementData.id}')
+  currentTasksList.find(x => x.id === '${listElementData.id}')
 }
 
 
@@ -55,8 +55,6 @@ function init() {
 
   // FETCHING TASKS FROM LOCAL STORAGE
   currentCategoryItems = JSON.parse(localStorage.getItem(`${constants.listPrefix}_${currentList.id}`) || "[]");
-
-  console.log('currentCategoryItems', currentCategoryItems);
 
   // ITERRATION THROUGH LOCAL STORAGE ARRAY
   for (let index = 0; index < currentCategoryItems.length; index++) {
@@ -99,7 +97,7 @@ function createElement(listElementData) {
 
   const lastElapsed = allElapsed[allElapsed.length - 1];
 
-  if (!lastElapsed ) {
+  if (!lastElapsed) {
     ul.insertAdjacentElement('afterbegin', newItem)
   } else {
     lastElapsed.after(newItem);
@@ -126,7 +124,8 @@ function createNewItem() {
   createElement(newItem);
 
 
-  savecurrentCategoryItems()
+  savecurrentCategoryItems();
+  sortList(document.querySelector('.items-style'));
   input.value = '';
   addDate.value = '';
 }
