@@ -1,4 +1,3 @@
-// TEMPLATE FOR SHOPPING LIST
 class toDoList {
   name = '';
   id = '';

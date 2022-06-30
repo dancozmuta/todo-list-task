@@ -1,4 +1,3 @@
-// TEMPLATE FOR ITEMS INSIDE THE SHOPPING LIST
 class ListItem {
   name = '';
   date = '';
